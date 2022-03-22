@@ -78,7 +78,7 @@ def control_vehicle(model_path):
 
     log_name = datetime.datetime.now().strftime('%Y%m%d_%H%M%S') + '_' + model_name  + '.log'
 
-    f_model = open('newModelLog/Model' + log_name, 'w')
+    f_model = open('newModelLog/Model/' + log_name, 'w')
 
     # To flip the image, modify the flip_method parameter (0 and 2 are the most common)
     # print(gstreamer_pipeline(capture_width=width, capture_height=height, display_width=width, display_height=height, framerate=fps))
