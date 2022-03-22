@@ -107,8 +107,6 @@ def control_vehicle(model_path):
             if cap.isOpened():
                 window_handle = cv2.namedWindow("CSI Camera", cv2.WINDOW_AUTOSIZE)
                 # Window
-
-                #last_time = time.time()
                 while cv2.getWindowProperty("CSI Camera", 0) >= 0:
 
                     ser_in = ser.readline().decode('utf-8', 'ignore')
