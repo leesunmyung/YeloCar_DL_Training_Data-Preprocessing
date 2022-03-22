@@ -12,6 +12,7 @@ import numpy as np
 import argparse
 import time
 import math
+import datetime
 import serial
 
 hsv_lower = np.array([20, 90, 123])
@@ -71,7 +72,7 @@ class Yelocar:
 
     # Control with Model03
     @staticmethod
-    def control_vehicle(model):
+    def control_vehicle(model, masked):
 
         # masked = cv2.bitwise_and(frame, frame, mask=mask)
         # masked = np.reshape(masked, (1, 48, 64, 3))
@@ -90,7 +91,7 @@ class Yelocar:
 
     # Control with pid
     @staticmethod
-    def pid_vehicle(model, theta_cam, last_time, vel):
+    def pid_vehicle(model, masked, theta_cam, last_time, vel):
 
         # masked = cv2.bitwise_and(frame, frame, mask=mask)
         # masked = np.reshape(masked, (1, 48, 64, 3))
@@ -164,16 +165,17 @@ if __name__ == "__main__":
 
     # Take out .. from control_vehicle function
     now = time.localtime()
+    model_path = args.model_path[0]
 
     model_name = model_path.split('/')[-1]
 
-    log1 = '%02d-%02d-%02d-%02d_hybrid_%s' % (now.tm_mon, now.tm_mday, now.tm_hour, now.tm_min, model_name) + '.log'
-s
-    f1 = open('./hybrid/' + log1, 'w')
+    # log1 = '%02d-%02d-%02d-%02d_hybrid_%s' % (now.tm_mon, now.tm_mday, now.tm_hour, now.tm_min, model_name) + '.log'
+    log_name = datetime.datetime.now().strftime('%Y%m%d_%H%M%S') + '_hybrid_' + model_name
+    f1 = open('./hybrid/' + log_name, 'w')
 
-    cap = cv2.VideoCapture(gstreamer_pipeline(capture_width=640, capture_height=480, display_width=640, display_height=480, framerate=30), cv2.CAP_GSTREAMER)
+    cap = cv2.VideoCapture(gstreamer_pipeline(capture_width=width, capture_height=height, display_width=width, display_height=height, framerate=fps), cv2.CAP_GSTREAMER)
     fourcc = cv2.VideoWriter_fourcc(*'DIVX')
-    out = cv2.VideoWriter('newModelLog/Model/'+datetime.datetime.now().strftime('%Y%m%d_%H%M%S') + '_' + model_name + '.avi', fourcc, float(30), (width, height))
+    out = cv2.VideoWriter('hybrid/' + datetime.datetime.now().strftime('%Y%m%d_%H%M%S') + '_hybrid_' + model_name + '.avi', fourcc, float(30), (width, height))
 
     # Initialize theta = 0
     flag_control = 0
@@ -259,10 +261,10 @@ s
 
                     #if (0.69*i < (current_time - last_time) < 0.71*i) :
                     if (count % 6 == 0) :
-                        steer, throttle = yelocar.pid_vehicle(model, theta_cam, last_time, velocity)
+                        steer, throttle = yelocar.pid_vehicle(model, masked, theta_cam, last_time, velocity)
                         flag_control = 1
                     else :
-                        steer, throttle = yelocar.control_vehicle(model)
+                        steer, throttle = yelocar.control_vehicle(model, masked)
                         flag_control = 0
 
 
@@ -315,10 +317,13 @@ s
                     print("count = ", count)
 
                     last_time = time.time()
+                
+                cap.release()
+                out.release()
+                cv2.destroyAllWindows()
+            else:
+                print("Unable to open camera")
+                pass
 
-        else:
-            print("Unable to open camera")
-            pass
-
-    cap.release()
-    cv2.destroyAllWindows()
+    # cap.release()
+    # cv2.destroyAllWindows()
