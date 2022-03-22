@@ -118,10 +118,6 @@ def control_vehicle(model_path):
                     # print('rpm : ' + str(rpm) + '\n')
                     velocity = r*2*math.pi*rpm/60 #rpm contver to m/s
 
-                    #camera_reading_time = time.time()
-                    #print('camera_reading_time: {}'.format(time.time() - camera_reading_time))
-                    #image_preprocessing = time.time()
-
                     ret_val, img = cap.read()
                     cv2.imshow("CSI Camera", img)
 
